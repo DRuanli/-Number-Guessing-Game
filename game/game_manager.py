@@ -7,7 +7,7 @@ the genetic algorithm components to guess the secret number.
 
 import time
 import sys
-from typing import Dict, Any, Tuple, Optional, List
+from typing import Dict, Any, Tuple, Optional, List, Callable
 
 # These will be imported from the genetic_algorithm module when that's implemented
 # For now, we'll define placeholder type hints
@@ -50,6 +50,32 @@ class GameManager:
         self.generation_history = []
         self.start_time = None
         self.end_time = None
+        
+        # Observer pattern for visualization components
+        self.observers = []
+        
+    def add_observer(self, observer) -> None:
+        """
+        Add an observer that will be notified of game state changes.
+        
+        Args:
+            observer: Object that implements observer methods
+        """
+        self.observers.append(observer)
+    
+    def notify_observers(self, event_type: str, data: Dict[str, Any] = None) -> None:
+        """
+        Notify all observers of a game state change.
+        
+        Args:
+            event_type: Type of event (e.g., 'before_generation', 'after_fitness_evaluation')
+            data: Data associated with the event
+        """
+        for observer in self.observers:
+            method_name = f'on_{event_type}'
+            if hasattr(observer, method_name):
+                handler = getattr(observer, method_name)
+                handler(data)
         
     def setup_game(self) -> None:
         """
@@ -173,39 +199,81 @@ class GameManager:
         Returns:
             bool: True if the solution is found, False otherwise
         """
-        # This will be implemented when the genetic_algorithm module is created
-        # For now, we'll add a simple simulation to showcase the structure
-        
-        # Simulate evaluating fitness
-        # self.population.evaluate_fitness(self.secret_number)
-        
-        # Get the best individual from the population
-        # best_individual = self.population.get_best_individual()
-        # best_fitness = best_individual.fitness
-        
-        # For demonstration, let's simulate some progress
-        simulated_best_fitness = min(100, self.best_fitness + 1)
-        self.best_fitness = simulated_best_fitness
-        
-        # Record this generation's results
-        generation_record = {
+        # Notify observers before generation processing
+        self.notify_observers('before_generation', {
             'generation': self.current_generation,
-            'best_fitness': self.best_fitness,
-            'best_guess': None,  # Will be set to best_individual.value
-            'avg_fitness': None,  # Will be set to self.population.get_average_fitness()
-        }
-        self.generation_history.append(generation_record)
+            'population': self.population
+        })
         
-        # Check if the solution is found
-        solution_found = self.best_fitness == 100
-        
-        # If not found, create the next generation
-        if not solution_found:
-            # This will apply selection, crossover, and mutation to create a new generation
-            # self.population.create_next_generation()
-            pass
-        
-        return solution_found
+        # Evaluate fitness
+        if self.population:
+            self.population.evaluate_fitness(self.secret_number)
+            
+            # Notify observers after fitness evaluation
+            self.notify_observers('after_fitness_evaluation', {
+                'population': self.population
+            })
+            
+            # Get the best individual
+            best_individual = self.population.get_best_individual()
+            best_fitness = best_individual.fitness
+            
+            # Record this generation's results
+            generation_record = {
+                'generation': self.current_generation,
+                'best_fitness': best_fitness,
+                'best_guess': best_individual.value,
+                'avg_fitness': self.population.get_average_fitness(),
+            }
+            self.generation_history.append(generation_record)
+            
+            # Update best individual tracking
+            self.best_fitness = best_fitness
+            self.best_individual = best_individual
+            
+            # Check if the solution is found
+            solution_found = best_fitness >= 99.99
+            
+            # If not found, create the next generation
+            if not solution_found:
+                # Notify observers before next generation creation
+                self.notify_observers('before_next_generation', {
+                    'population': self.population
+                })
+                
+                # Create the next generation
+                self.population.create_next_generation()
+                
+                # Notify observers after next generation creation
+                self.notify_observers('after_next_generation', {
+                    'population': self.population
+                })
+            
+            # Notify observers after generation is complete
+            self.notify_observers('after_generation', {
+                'generation': self.current_generation,
+                'population': self.population,
+                'best_individual': best_individual,
+                'solution_found': solution_found
+            })
+            
+            return solution_found
+        else:
+            # For demonstration purposes (remove in actual implementation)
+            # Simulate progress when population is not implemented yet
+            self.best_fitness = min(100, self.best_fitness + 1)
+            solution_found = self.best_fitness == 100
+            
+            # Record simulated results
+            generation_record = {
+                'generation': self.current_generation,
+                'best_fitness': self.best_fitness,
+                'best_guess': '?',
+                'avg_fitness': max(0, self.best_fitness - 10),
+            }
+            self.generation_history.append(generation_record)
+            
+            return solution_found
     
     def _display_progress(self) -> None:
         """
