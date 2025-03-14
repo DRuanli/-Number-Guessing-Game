@@ -1,188 +1,134 @@
-# -Number-Guessing-Game
-# Genetic Algorithm Number Guessing Game
+# Genetic Algorithm Visualization
 
-A Python implementation of a number guessing game that uses genetic algorithms to efficiently find a secret number specified by the user. This project demonstrates evolutionary computation principles by evolving a population of guesses over multiple generations.
+This module provides an interactive visualization of the genetic algorithm for the Number Guessing Game using Pygame.
 
 ## Features
 
-- Interactive command-line interface
-- Genetic algorithm implementation with configurable parameters
-- Multiple selection, crossover, and mutation methods
-- Comprehensive statistics tracking and performance analysis
-- Colored terminal output for better visualization
-- Configurable via command-line arguments or configuration files
+- Real-time visualization of the genetic algorithm's operation
+- Population visualization on a number line
+- Fitness landscape representation
+- Evolution charts showing fitness and diversity trends
+- Genetic operations (selection, crossover, mutation) visualization
+- Statistics dashboard with performance metrics
+- Interactive controls for pausing, stepping, and adjusting speed
+- Screenshot capability
 
-## Installation
+## Requirements
 
-1. Clone the repository
-   ```bash
-   git clone https://github.com/yourusername/genetic-algorithm-number-guessing.git
-   cd genetic-algorithm-number-guessing
-   ```
+- Python 3.6 or higher
+- Pygame 2.0.0 or higher
 
-2. No additional dependencies are required beyond Python's standard library.
+Install Pygame with:
+
+```bash
+pip install pygame
+```
 
 ## Usage
 
-### Basic Usage
-
-Run the game with default settings:
+Run the visualization with:
 
 ```bash
-python main.py
+python main_visual.py
 ```
 
-Follow the prompts to enter a secret number and configure the genetic algorithm parameters.
+### Command-line Options
 
-### Command-Line Options
-
-The game supports numerous command-line options to customize its behavior:
+All command-line arguments from the original `main.py` are supported, plus additional visualization options:
 
 ```bash
-python main.py --min 1 --max 1000 --population 50 --crossover-rate 0.8 --mutation-rate 0.1
+python main_visual.py --visual-mode all --window-width 1280 --window-height 720 --theme default
 ```
 
-#### Available Options
+#### Visualization-specific options
 
 | Option | Description | Default |
 |--------|-------------|---------|
-| `--min` | Minimum number in range | 1 |
-| `--max` | Maximum number in range | 100 |
-| `--population` | Population size | 20 |
-| `--crossover-rate` | Crossover rate (0.0-1.0) | 0.8 |
-| `--mutation-rate` | Mutation rate (0.0-1.0) | 0.1 |
-| `--elitism` | Number of elite individuals | 2 |
-| `--max-generations` | Maximum generations | 1000 |
-| `--secret` | Secret number (skips prompt) | None |
-| `--selection` | Selection method (tournament, roulette, rank) | tournament |
-| `--crossover` | Crossover method (arithmetic, average, binary, binary_two_point, adaptive) | adaptive |
-| `--mutation` | Mutation method (random, bit_flip, boundary, gaussian, adaptive) | adaptive |
-| `--fitness` | Fitness method (linear, inverse, exponential, combined, hot_cold) | linear |
-| `--config` | Path to config file | None |
-| `--save-config` | Save configuration to file | None |
-| `--save-stats` | Save statistics to file | None |
-| `--no-color` | Disable colored output | False |
-| `--quiet` | Run in quiet mode | False |
+| `--visual-mode` | Visualization mode (`all`, `population`, `fitness`, `evolution`, `operations`) | `all` |
+| `--window-width` | Width of the visualization window | `1280` |
+| `--window-height` | Height of the visualization window | `720` |
+| `--fps` | Frames per second for visualization | `60` |
+| `--speed` | Speed multiplier for evolution | `1` |
+| `--theme` | Visualization theme (`default`, `dark`, `colorblind`) | `default` |
+| `--no-animation` | Disable animations | `False` |
 
-### Examples
+## Visualization Components
 
-Find a number between 1 and 1000 with a larger population:
-```bash
-python main.py --min 1 --max 1000 --population 50
-```
+### Population View
 
-Use specific genetic algorithm parameters:
-```bash
-python main.py --selection roulette --crossover binary --mutation gaussian
-```
+Displays the population of individuals as circles on a number line:
+- Each circle represents an individual in the population
+- Position on the line indicates the individual's value (guess)
+- Color represents fitness (red = low, green = high)
+- Size varies based on fitness
+- The target (secret number) is marked with a triangle
 
-Provide a secret number directly (useful for testing):
-```bash
-python main.py --secret 42
-```
+### Fitness Landscape
 
-Save statistics for analysis:
-```bash
-python main.py --save-stats stats.json
-```
+Shows the fitness function as a curve and plots individuals on it:
+- X-axis represents the possible values
+- Y-axis represents fitness (0-100%)
+- Individuals are positioned according to their value and fitness
+- The target (secret number) is marked with a vertical line
 
-## How It Works
+### Evolution Chart
 
-### Genetic Algorithm Approach
+Displays the progression of key metrics over generations:
+- Fitness chart (best fitness and average fitness)
+- Diversity chart showing population diversity over time
+- Annotations for important events (plateaus, convergence)
 
-The genetic algorithm works as follows:
+### Operations View
 
-1. **Initialization**: Create a random population of individuals (guesses).
-2. **Fitness Evaluation**: Calculate how close each guess is to the secret number.
-3. **Selection**: Choose the best individuals for reproduction based on fitness.
-4. **Crossover**: Combine pairs of individuals to create offspring.
-5. **Mutation**: Introduce small random changes to maintain diversity.
-6. **Replacement**: Create a new generation from offspring and elite individuals.
-7. **Repeat**: Continue evolving until the correct number is found or the maximum generations is reached.
+Visualizes the genetic operations in action:
+- Selection of individuals for reproduction
+- Crossover between parents to create offspring
+- Mutation of individuals to introduce variation
+- Animated transitions between operation stages
 
-### Fitness Function
+### Statistics Dashboard
 
-The fitness function evaluates how close a guess is to the secret number. The default linear fitness function calculates:
+Provides real-time statistics and performance metrics:
+- Generation counter
+- Best fitness with progress bar
+- Best guess and average fitness
+- Population diversity
+- Elapsed time and speed (generations per second)
+- Estimated time to solution
 
-```
-fitness = 100 * (range_size - distance) / range_size
-```
+## Controls
 
-Where `distance` is the absolute difference between the guess and the secret number, and `range_size` is the size of the possible number range.
+The visualization provides several interactive controls:
 
-## Project Structure
+### Keyboard Controls
 
-```
-genetic_algorithm_number_guessing/
-│
-├── main.py                  # Entry point
-│
-├── game/
-│   ├── __init__.py
-│   ├── game_manager.py      # Game flow management
-│   └── display.py           # User interface
-│
-├── genetic_algorithm/
-│   ├── __init__.py
-│   ├── individual.py        # Individual representation
-│   ├── population.py        # Population management
-│   ├── selection.py         # Selection methods
-│   ├── crossover.py         # Crossover methods
-│   ├── mutation.py          # Mutation methods
-│   └── fitness.py           # Fitness calculation
-│
-└── utils/
-    ├── __init__.py
-    ├── config.py            # Configuration management
-    └── statistics.py        # Statistics tracking
-```
+- `Space`: Pause/Resume evolution
+- `Right Arrow`: Step forward one generation (when paused)
+- `S`: Take screenshot
+- `Escape`: Quit
 
-## Configuration
+### UI Controls
 
-You can customize all genetic algorithm parameters either through command-line arguments or by creating a configuration file.
+- Play/Pause button: Toggles the evolution process
+- Step button: Advances one generation when paused
+- Reset button: Resets the evolution process
+- Speed slider: Adjusts the evolution speed (1-10x)
+- Screenshot button: Saves the current screen to a file
 
-### Sample Configuration File
+## Extending the Visualization
 
-```json
-{
-    "MIN_NUMBER": 1,
-    "MAX_NUMBER": 1000,
-    "POPULATION_SIZE": 50,
-    "CROSSOVER_RATE": 0.8,
-    "MUTATION_RATE": 0.1,
-    "ELITISM_COUNT": 2,
-    "SELECTION_METHOD": "tournament",
-    "TOURNAMENT_SIZE": 3,
-    "CROSSOVER_METHOD": "adaptive",
-    "MUTATION_METHOD": "adaptive",
-    "FITNESS_METHOD": "linear"
-}
-```
+The visualization system is designed to be modular and extensible:
 
-Load a configuration file with:
-```bash
-python main.py --config myconfig.json
-```
+1. Add new visualization components by creating classes that render to a Pygame surface
+2. Register components with the PyGameVisualizer
+3. Subscribe to events using the observer pattern in GameManager
 
-## Statistics
+## Themes
 
-The game can generate detailed statistics about the genetic algorithm's performance. View these in the console (when running in verbose mode) or save them to a file:
+The visualization supports multiple themes:
 
-```bash
-python main.py --save-stats mystats.json
-```
+- `default`: Light theme with blue accents
+- `dark`: Dark theme with white text and adjusted colors
+- `colorblind`: Colorblind-friendly theme with accessible color combinations
 
-The statistics include:
-- Generations to find the solution
-- Fitness progression over time
-- Convergence analysis
-- Performance metrics
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Acknowledgments
-
-- This project was created as a demonstration of genetic algorithms for educational purposes.
-- Inspired by classic genetic algorithm demonstrations and tutorials.
+You can create custom themes by adding new theme definitions to `themes.py`.
