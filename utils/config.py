@@ -14,7 +14,7 @@ from typing import Dict, Any, Optional, List
 DEFAULT_CONFIG = {
     # Game parameters
     'MIN_NUMBER': 1,
-    'MAX_NUMBER': 100,
+    'MAX_NUMBER': 1000000,
     'MAX_GENERATIONS': 1000,
     'DISPLAY_INTERVAL': 5,
     
